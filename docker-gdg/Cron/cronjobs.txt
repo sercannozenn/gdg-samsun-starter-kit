@@ -1,0 +1,1 @@
+* * * * * root /etc/php8.2/php /var/www/html/projeninYolu/ artisan schedule:run >> /dev/null 2>&1
