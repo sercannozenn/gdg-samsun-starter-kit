@@ -5,3 +5,6 @@ docker-gdg/redis/*
 !docker-gdg/redis/redis.txt
 docker-gdg/mysql8_1/*
 !docker-gdg/mysql8_1/mysql8_1.txt
+projects/*
+!projects/testProje
+
