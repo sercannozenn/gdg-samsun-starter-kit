@@ -1,0 +1,123 @@
+version: '3'
+
+services:
+  php8.1:
+    build:
+      context: ./php8.1
+    hostname: php8.1
+    ports:
+      - "10002:9000"
+      - "6001:6001"
+    volumes:
+      - ../projects/:/var/www/html/
+      - ./php8.1/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./php8.1/php.ini:/usr/local/etc/php/php.ini
+
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+  php8.2:
+    build:
+      context: ./php8.2
+    hostname: php8.2
+    ports:
+      - "10001:9000"
+      - "6002:6002"
+    volumes:
+      - ../projects/:/var/www/html/
+      - ./php8.2/www.conf:/usr/local/etc/php-fpm.d/www.conf
+      - ./php8.2/php.ini:/usr/local/etc/php/php.ini
+
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+  nginx:
+    image: nginx:1.13.8
+    ports:
+      - "80:80"
+      - "8000:8000"
+      - "8888:8888"
+    volumes:
+      - ../projects/:/var/www/html/
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php8.1
+      - php8.2
+    networks:
+      - backend
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    depends_on:
+      - php8.1
+      - php8.2
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+  mysql8.1:
+    image: mysql:8.1.0
+    ports:
+      - "3307:3306"
+    depends_on:
+      - php8.1
+      - php8.2
+    volumes:
+      - ./mysql8_1:/var/lib/mysql8.1
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - backend
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      PMA_HOST: mysql
+      #PMA_USER: root
+      #PMA_PASSWORD: "12345678"
+    depends_on:
+      - mysql
+      - mysql8.1
+    ports:
+      - "8080:80"
+    networks:
+      - backend
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis:/data
+    networks:
+      - backend
+  redisui:
+    image: patrikx3/p3x-redis-ui:latest
+    ports:
+      - "7843:7843"
+    volumes:
+      - ./p3x-redis-ui-settings:/settings
+    networks:
+      - backend
+  elastic:
+    image: elasticsearch:7.17.1
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - elastic_container=true
+    networks:
+      - backend
+networks:
+  backend:
+    driver: bridge
