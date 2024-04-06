@@ -75,7 +75,7 @@ services:
       - php8.1
       - php8.2
     volumes:
-      - ./mysql8_1:/var/lib/mysql8.1
+      - ./mysql8_1:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
@@ -83,9 +83,11 @@ services:
     networks:
       - backend
   phpmyadmin:
+    platform: linux/x86_64
     image: phpmyadmin/phpmyadmin:latest
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: mysql8.1
+#      PMA_PORT: 3307
       #PMA_USER: root
       #PMA_PASSWORD: "12345678"
     depends_on:
