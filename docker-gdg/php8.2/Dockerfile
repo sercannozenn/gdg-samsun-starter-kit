@@ -43,3 +43,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN chown -R www-data:www-data /var/www/html/
 RUN chown -R www-data:www-data /var/www/html/
 
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+CMD ["/usr/bin/supervisord", "-c","/etc/supervisor/supervisord.conf"]
+
