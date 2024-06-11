@@ -32,6 +32,7 @@ RUN docker-php-ext-install ctype
 RUN docker-php-ext-install fileinfo
 RUN docker-php-ext-install pdo
 RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install exif
 #RUN docker-php-ext-install tokenizer
 
 RUN apt-get update -y
